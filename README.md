@@ -40,6 +40,18 @@ python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt && pip install --no-deps .
 ```
 
+### Accept the terms and log in
+
+The model repos are gated. Before the first download, open the model page on [Hugging Face](https://huggingface.co),
+log in, and accept the [terms of use](TERMS.md) (access is granted at once). Then log in on this Mac with the
+[Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/guides/cli), or set `HF_TOKEN` to a read token:
+
+```bash
+uv run hf auth login
+```
+
+Without this, the download stops with a gated-repo error.
+
 ## Answer one prompt
 
 ```bash
@@ -98,7 +110,7 @@ Use it in: [Insert application you will use it in, for example Opencode]
 Set up Dory 1.0 4B abliterated on this computer. Do every step yourself.
 1. Check the tools: Python, uv or pip, git, the Hugging Face CLI. Install the HF CLI if it is missing.
 2. Check the hardware. Apple Silicon Mac: MLX build. NVIDIA Blackwell GPU (RTX 50xx, RTX PRO 6000, B200): NVFP4 build. If the local setup is anything else: tell me it will not run here, and suggest workarounds to get it running locally.
-3. Download only the chosen build with the HF CLI and check every file. MLX: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4-MLX NVFP4: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4
+3. The model repos are gated. Ask me to open the chosen repo page, log in and accept the terms, then run `hf auth login` (or set HF_TOKEN). Download only the chosen build with the HF CLI and check every file. MLX: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4-MLX NVFP4: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4
 4. Get the code. Mac: clone https://github.com/Balllvin/brainspa-mlx. NVIDIA: install vLLM as the model card says.
 5. Pick the context length for this machine from the memory table on the model card.
 6. Ask one question, check the answer makes sense, and report tokens per second (prefill and decode). If anything fails, fix it and try again.
@@ -121,6 +133,7 @@ BRAINSPA_MLX_MODEL=balllvin/Dory1.0-4B-abliterated-NVFP4-MLX uv run pytest -m mo
 - [Apple](https://www.apple.com)'s [MLX](https://github.com/ml-explore/mlx) and [mlx-lm](https://github.com/ml-explore/mlx-lm) ([MIT](https://opensource.org/license/mit)), and the
   [pmichalas mlx-lm fork](https://github.com/pmichalas/mlx-lm) with the [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) model code.
 
-The code here is under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) (`LICENSE`). The model weights carry their own licence, the
+Using the models means agreeing to the [terms of use](TERMS.md): you alone are responsible and liable for your use of
+them and their outputs. The code here is under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) (`LICENSE`). The model weights carry their own licence, the
 [OpenMDW 1.1](https://openmdw.ai/license/1-1/) for the [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) builds; see each model card. This is an independent
 community project, unaffiliated with [NVIDIA](https://www.nvidia.com) or [Apple](https://www.apple.com).
