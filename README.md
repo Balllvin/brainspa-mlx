@@ -1,21 +1,21 @@
 # brainspa-mlx
 
-Run our Dory 1.0 4B models on an Apple Silicon Mac with Apple's [MLX](https://github.com/ml-explore/mlx). This repo holds
+Run our [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) 1.0 4B models on an [Apple Silicon](https://support.apple.com/en-us/116943) Mac with [Apple](https://www.apple.com)'s [MLX](https://github.com/ml-explore/mlx). This repo holds
 only the inference code: load a model, answer a prompt, and serve it over an OpenAI-compatible API.
 
 ## Which file do I use?
 
 | Your hardware | Build | Repo |
 |---|---|---|
-| Apple Silicon Mac (M1 or later) | MLX: the same model for Apple Silicon Macs, run with Apple's MLX. | this code plus an `-MLX` repo below |
-| NVIDIA GPU (CUDA) | NVFP4: 4-bit weights for NVIDIA GPUs (CUDA), for example [vLLM](https://github.com/vllm-project/vllm) on Blackwell (RTX PRO 6000, B200). | an NVFP4 repo below, served with vLLM |
+| [Apple Silicon](https://support.apple.com/en-us/116943) Mac ([M1](https://support.apple.com/en-us/116943) or later) | [MLX](https://github.com/ml-explore/mlx): the same model for [Apple Silicon](https://support.apple.com/en-us/116943) Macs, run with [Apple](https://www.apple.com)'s [MLX](https://github.com/ml-explore/mlx). | this code plus an `-MLX` repo below |
+| [NVIDIA](https://www.nvidia.com) GPU ([CUDA](https://developer.nvidia.com/cuda-toolkit)) | [NVFP4](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/): 4-bit weights for [NVIDIA](https://www.nvidia.com) GPUs ([CUDA](https://developer.nvidia.com/cuda-toolkit)), for example [vLLM](https://github.com/vllm-project/vllm) on [Blackwell](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/) ([RTX PRO 6000](https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-6000/), [B200](https://www.nvidia.com/en-us/data-center/dgx-b200/)). | an [NVFP4](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) repo below, served with [vLLM](https://github.com/vllm-project/vllm) |
 
 ## Models
 
-| Model | MLX (Mac) | NVFP4 (NVIDIA) |
+| Model | [MLX](https://github.com/ml-explore/mlx) (Mac) | [NVFP4](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) ([NVIDIA](https://www.nvidia.com)) |
 |---|---|---|
-| Dory 1.0 4B abliterated | [balllvin/Dory1.0-4B-abliterated-NVFP4-MLX](https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4-MLX) | [balllvin/Dory1.0-4B-abliterated-NVFP4](https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4) |
-| Dory 1.0 4B abliterated + Arete | [balllvin/Dory1.0-4B-abliterated-Arete-NVFP4-MLX](https://huggingface.co/balllvin/Dory1.0-4B-abliterated-Arete-NVFP4-MLX) | [balllvin/Dory1.0-4B-abliterated-Arete-NVFP4](https://huggingface.co/balllvin/Dory1.0-4B-abliterated-Arete-NVFP4) |
+| [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) 1.0 4B abliterated | [balllvin/Dory1.0-4B-abliterated-NVFP4-MLX](https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4-MLX) | [balllvin/Dory1.0-4B-abliterated-NVFP4](https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4) |
+| [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) 1.0 4B abliterated + [Arete](https://huggingface.co/datasets/NousResearch/arete-data-pairs) | [balllvin/Dory1.0-4B-abliterated-Arete-NVFP4-MLX](https://huggingface.co/balllvin/Dory1.0-4B-abliterated-Arete-NVFP4-MLX) | [balllvin/Dory1.0-4B-abliterated-Arete-NVFP4](https://huggingface.co/balllvin/Dory1.0-4B-abliterated-Arete-NVFP4) |
 
 Both are built from [NVIDIA](https://www.nvidia.com)'s
 [Nemotron-Labs Dory 1.0 4B NVFP4](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4). Each model card
@@ -23,7 +23,7 @@ has the results, the memory tables and how the model was made.
 
 ## Install
 
-You need an Apple Silicon Mac, Python 3.12 to 3.14 and [uv](https://docs.astral.sh/uv/) (or pip).
+You need an [Apple Silicon](https://support.apple.com/en-us/116943) Mac, Python 3.12 to 3.14 and [uv](https://docs.astral.sh/uv/) (or [pip](https://pip.pypa.io)).
 
 ```bash
 git clone https://github.com/Balllvin/brainspa-mlx
@@ -31,8 +31,8 @@ cd brainspa-mlx
 uv sync
 ```
 
-`uv sync` installs the exact versions in `uv.lock`: MLX 0.32.4 and [mlx-lm](https://github.com/ml-explore/mlx-lm) from
-the [pmichalas fork](https://github.com/pmichalas/mlx-lm) at commit `208065f3`, which adds the Dory model code. With pip,
+`uv sync` installs the exact versions in `uv.lock`: [MLX](https://github.com/ml-explore/mlx) 0.32.4 and [mlx-lm](https://github.com/ml-explore/mlx-lm) from
+the [pmichalas fork](https://github.com/pmichalas/mlx-lm) at commit `208065f3`, which adds the [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) model code. With [pip](https://pip.pypa.io),
 use the same pins:
 
 ```bash
@@ -49,8 +49,8 @@ uv run brainspa-mlx generate --model balllvin/Dory1.0-4B-abliterated-NVFP4-MLX "
 The first run downloads the model (3.0 GB) from [Hugging Face](https://huggingface.co). The model thinks first, so the
 output shows `Reasoning:`, then `Answer:`, then a line with the token count, tokens per second and peak memory.
 
-Dory is a looped model: a block of its layers runs several times per token. Use 2 loops (the default) for most work
-and `--loops 4` for hard tasks. Thinking is always on, and sampling follows NVIDIA's card (temperature 1.0, top-p 0.95).
+[Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) is a looped model: a block of its layers runs several times per token. Use 2 loops (the default) for most work
+and `--loops 4` for hard tasks. Thinking is always on, and sampling follows [NVIDIA](https://www.nvidia.com)'s card (temperature 1.0, top-p 0.95).
 
 ## Serve it to other apps
 
@@ -71,10 +71,10 @@ curl http://127.0.0.1:8080/v1/chat/completions -H 'Content-Type: application/jso
 The server holds one model, so clients can leave out the `model` field. Other `mlx_lm.server` options pass through,
 for example `--host 0.0.0.0`.
 
-`--fast` (Dory only) turns on our Metal kernels for Dory's normalisation steps and a two-stage output layer (a 4-bit copy of the
+`--fast` ([Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) only) turns on our [Metal](https://developer.apple.com/metal/) kernels for [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4)'s normalisation steps and a two-stage output layer (a 4-bit copy of the
 output layer picks the top 1,024 tokens and the original bf16 weights score them). Against the plain path it agreed on
 99.4% of next tokens over 2,046 steps (mean KL 0.0006) and ran 15% faster at one request (54.7 against 47.7 tokens per
-second on an M5 Pro); at 8 and 12 requests the two paths ran within 2% of each other.
+second on an [M5 Pro](https://www.apple.com/macbook-pro/)); at 8 and 12 requests the two paths ran within 2% of each other.
 
 ## How much context fits?
 
@@ -115,9 +115,9 @@ BRAINSPA_MLX_MODEL=balllvin/Dory1.0-4B-abliterated-NVFP4-MLX uv run pytest -m mo
 ## Credits and licence
 
 - [NVIDIA](https://www.nvidia.com), for [Nemotron-Labs Dory 1.0 4B](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4).
-- Apple's [MLX](https://github.com/ml-explore/mlx) and [mlx-lm](https://github.com/ml-explore/mlx-lm) (MIT), and the
-  [pmichalas mlx-lm fork](https://github.com/pmichalas/mlx-lm) with the Dory model code.
+- [Apple](https://www.apple.com)'s [MLX](https://github.com/ml-explore/mlx) and [mlx-lm](https://github.com/ml-explore/mlx-lm) ([MIT](https://opensource.org/license/mit)), and the
+  [pmichalas mlx-lm fork](https://github.com/pmichalas/mlx-lm) with the [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) model code.
 
-The code here is under the Apache License 2.0 (`LICENSE`). The model weights carry their own licence, the
-[OpenMDW 1.1](https://openmdw.ai/license/1-1/) for the Dory builds; see each model card. This is an independent
-community project, unaffiliated with NVIDIA or Apple.
+The code here is under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) (`LICENSE`). The model weights carry their own licence, the
+[OpenMDW 1.1](https://openmdw.ai/license/1-1/) for the [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) builds; see each model card. This is an independent
+community project, unaffiliated with [NVIDIA](https://www.nvidia.com) or [Apple](https://www.apple.com).
