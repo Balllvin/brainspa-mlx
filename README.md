@@ -47,7 +47,7 @@ uv run brainspa-mlx generate --model balllvin/Dory1.0-4B-abliterated-NVFP4-MLX "
 ```
 
 The first run downloads the model (3.0 GB) from [Hugging Face](https://huggingface.co). The model thinks first, so the
-output shows its reasoning, then the answer, then a summary line with tokens per second and peak memory.
+output shows `Reasoning:`, then `Answer:`, then a line with the token count, tokens per second and peak memory.
 
 Dory is a looped model: a block of its layers runs several times per token. Use 2 loops (the default) for most work
 and `--loops 4` for hard tasks. Thinking is always on, and sampling follows NVIDIA's card (temperature 1.0, top-p 0.95).
@@ -59,8 +59,9 @@ uv run brainspa-mlx serve --model balllvin/Dory1.0-4B-abliterated-NVFP4-MLX --po
 ```
 
 This starts [mlx-lm's server](https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md) with the loop count set.
-Any OpenAI-compatible client can use `http://127.0.0.1:8080/v1`. The reply carries the thinking in `reasoning` and the
-answer in `content`. A simple question uses 600 to 1,200 tokens of thinking, so set `max_tokens` well above that:
+Any OpenAI-compatible client can use `http://127.0.0.1:8080/v1`. The reply carries the reasoning in `reasoning` and the
+answer in `content`. Reasoning length varies with the question, from a few hundred tokens to several thousand, so set
+`max_tokens` high; a low limit cuts the reply inside the reasoning and returns an empty answer:
 
 ```bash
 curl http://127.0.0.1:8080/v1/chat/completions -H 'Content-Type: application/json' \
@@ -69,10 +70,10 @@ curl http://127.0.0.1:8080/v1/chat/completions -H 'Content-Type: application/jso
 
 Other `mlx_lm.server` options pass through, for example `--host 0.0.0.0`.
 
-`--fast` turns on our Metal kernels for Dory's normalisation steps and a two-stage output layer (a 4-bit copy of the
+`--fast` (Dory only) turns on our Metal kernels for Dory's normalisation steps and a two-stage output layer (a 4-bit copy of the
 output layer picks the top 1,024 tokens and the original bf16 weights score them). Against the plain path it agreed on
-99.4% of next tokens over 2,046 steps (mean KL 0.0006) and ran 15% faster at one stream; at 8 and 12 streams the two
-paths ran at the same speed.
+99.4% of next tokens over 2,046 steps (mean KL 0.0006) and ran 15% faster at one request (54.7 against 47.7 tokens per
+second on an M5 Pro); at 8 and 12 requests the two paths ran within 2% of each other.
 
 ## How much context fits?
 
@@ -95,11 +96,12 @@ Use it in: [APP, for example Open WebUI, Continue, or just the terminal]
 Set up Dory 1.0 4B abliterated on this computer. Do every step yourself.
 1. Check the tools: Python, uv or pip, git, the Hugging Face CLI. Install the HF CLI if it is missing.
 2. Check the hardware. Apple Silicon Mac: MLX build. NVIDIA Blackwell GPU (RTX 50xx, RTX PRO 6000, B200): NVFP4 build. Anything else: tell me it will not run here, and stop.
-3. Download the weights with the HF CLI and check every file: MLX https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4-MLX, NVFP4 https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4
-4. Get the code: on a Mac clone https://github.com/Balllvin/brainspa-mlx, on NVIDIA install vLLM as the model card says. Pick a context length from the card's memory table.
-5. Ask one question, check the answer makes sense, and report tokens per second. If anything fails, fix it and try again.
-6. Start the OpenAI-compatible server and connect it to the app on the first line.
-7. Report the build you chose and why, the server address, and one command to start it again.
+3. Download only the chosen build with the HF CLI and check every file. MLX: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4-MLX NVFP4: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4
+4. Get the code. Mac: clone https://github.com/Balllvin/brainspa-mlx. NVIDIA: install vLLM as the model card says.
+5. Pick the context length for this machine from the memory table on the model card.
+6. Ask one question, check the answer makes sense, and report tokens per second. If anything fails, fix it and try again.
+7. Start the OpenAI-compatible server and connect it to the app on the first line (for the terminal, show one curl call).
+8. Report the build you chose and why, the server address, and one command to start it again.
 ```
 
 ## Tests
