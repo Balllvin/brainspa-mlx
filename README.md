@@ -107,7 +107,7 @@ requests fit 202K each and 8 requests fit 99K each.
 ## Set it up with a coding agent
 
 Paste this into a coding agent such as [Claude Code](https://claude.com/claude-code) or
-[Codex](https://github.com/openai/codex). Edit the first line first.
+[OpenCode](https://opencode.ai). Edit the first line first.
 
 ```text
 Use it in: [Insert application you will use it in, for example Opencode]
