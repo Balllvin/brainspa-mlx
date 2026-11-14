@@ -33,9 +33,11 @@ def test_split_thinking(text, reasoning, answer):
     assert runtime.split_thinking(text) == (reasoning, answer)
 
 
-def test_server_argv_adds_card_sampling():
-    assert cli.server_argv(["--port", "9000"]) == ["--port", "9000", "--temp", "1.0", "--top-p", "0.95"]
-    assert cli.server_argv(["--temp", "0.6", "--top-p", "0.9"]) == ["--temp", "0.6", "--top-p", "0.9"]
+def test_server_argv_adds_defaults_the_caller_left_out():
+    assert cli.server_argv(["--port", "9000"]) == ["--port", "9000", "--temp", "1.0", "--top-p", "0.95",
+                                                   "--max-tokens", "32768", "--prompt-cache-bytes", str(4 * 2**30)]
+    argv = cli.server_argv(["--temp", "0.6", "--max-tokens", "1000"])
+    assert argv[:4] == ["--temp", "0.6", "--max-tokens", "1000"] and argv.count("--max-tokens") == 1
 
 
 def test_serve_injects_loops_into_server_load(tmp_path, monkeypatch):

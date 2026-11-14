@@ -57,13 +57,20 @@ def cmd_generate(a) -> int:
     return 0 if r.answer else 1
 
 
+SERVER_DEFAULTS = {
+    "--temp": str(runtime.TEMPERATURE),
+    "--top-p": str(runtime.TOP_P),
+    "--max-tokens": "32768",  # mlx_lm.server's 512 ends most replies inside the reasoning
+    "--prompt-cache-bytes": str(4 * 2**30),  # an agent app's long prompts otherwise grow the cache past 9 GB
+}
+
+
 def server_argv(rest: list[str]) -> list[str]:
-    """mlx_lm.server options with the model card's sampling unless the caller set them."""
+    """mlx_lm.server options with our defaults for any option the caller did not set."""
     argv = list(rest)
-    if "--temp" not in argv:
-        argv += ["--temp", str(runtime.TEMPERATURE)]
-    if "--top-p" not in argv:
-        argv += ["--top-p", str(runtime.TOP_P)]
+    for flag, value in SERVER_DEFAULTS.items():
+        if flag not in argv:
+            argv += [flag, value]
     return argv
 
 
