@@ -77,6 +77,7 @@ class Result:
     reasoning: str
     answer: str
     prompt_tokens: int
+    prompt_tokens_per_second: float
     generated_tokens: int
     tokens_per_second: float
     seconds: float
@@ -96,5 +97,5 @@ def generate(model, tokenizer, prompt: str, max_tokens: int = 32768, on_text=Non
         if on_text:
             on_text(last.text)
     reasoning, answer = split_thinking(text)
-    return Result(reasoning, answer, last.prompt_tokens, last.generation_tokens, last.generation_tps,
+    return Result(reasoning, answer, last.prompt_tokens, last.prompt_tps, last.generation_tokens, last.generation_tps,
                   time.perf_counter() - start, last.peak_memory)

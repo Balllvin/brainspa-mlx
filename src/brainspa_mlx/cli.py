@@ -27,6 +27,7 @@ def parser() -> argparse.ArgumentParser:
     _common(g)
     g.add_argument("--max-tokens", type=int, default=32768)
     g.add_argument("--quiet", action="store_true", help="print only the final summary, not the streamed text")
+    g.add_argument("--context-file", default=None, help="put this file's text in front of the prompt (a longer prefill)")
     g.add_argument("prompt")
     s = sub.add_parser("serve", help="OpenAI-compatible server (mlx_lm.server)")
     _common(s)
@@ -42,11 +43,15 @@ def cmd_generate(a) -> int:
     stream = None if a.quiet else (lambda t: print(t.replace("</think>", "\n\nAnswer:\n"), end="", flush=True))
     if stream:
         print("Reasoning:")
-    r = runtime.generate(model, tokenizer, a.prompt, a.max_tokens, on_text=stream)
+    prompt = a.prompt
+    if a.context_file:
+        with open(a.context_file, encoding="utf-8") as fh:
+            prompt = fh.read() + "\n\n" + prompt
+    r = runtime.generate(model, tokenizer, prompt, a.max_tokens, on_text=stream)
     if a.quiet:
         print(f"Reasoning: {len(r.reasoning)} characters\n\nAnswer:\n{r.answer}")
-    print(f"\n\n{r.generated_tokens} tokens, {r.tokens_per_second:.1f} tokens/s, prompt {r.prompt_tokens} tokens, "
-          f"peak memory {r.peak_memory_gb:.2f} GB")
+    print(f"\n\nprefill: {r.prompt_tokens} tokens at {r.prompt_tokens_per_second:.1f} tokens/s | "
+          f"decode: {r.generated_tokens} tokens at {r.tokens_per_second:.1f} tokens/s | peak memory {r.peak_memory_gb:.2f} GB")
     if not r.answer:
         print("No answer: the reply ended inside the reasoning. Raise --max-tokens.", file=sys.stderr)
     return 0 if r.answer else 1
