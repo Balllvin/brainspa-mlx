@@ -34,9 +34,9 @@ def test_split_thinking(text, reasoning, answer):
 
 
 def test_server_argv_adds_defaults_the_caller_left_out():
-    assert cli.server_argv(["--port", "9000"]) == ["--port", "9000", "--temp", "1.0", "--top-p", "0.95",
-                                                   "--max-tokens", "32768", "--prompt-cache-bytes", str(4 * 2**30)]
-    argv = cli.server_argv(["--temp", "0.6", "--max-tokens", "1000"])
+    assert cli.server_argv(["--port", "9000"], 262144) == ["--port", "9000", "--max-tokens", "262144", "--temp", "1.0",
+                                                           "--top-p", "0.95", "--prompt-cache-bytes", str(4 * 2**30)]
+    argv = cli.server_argv(["--temp", "0.6", "--max-tokens", "1000"], 262144)
     assert argv[:4] == ["--temp", "0.6", "--max-tokens", "1000"] and argv.count("--max-tokens") == 1
 
 
@@ -44,6 +44,8 @@ def test_serve_injects_loops_into_server_load(tmp_path, monkeypatch):
     (tmp_path / "config.json").write_text(json.dumps(DORY))
     calls = {}
     fake = types.ModuleType("mlx_lm.server")
+    fake.BatchGenerator = type("BatchGenerator", (), {"insert_segments": lambda self, *a, **k: None})
+    fake.stream_generate = lambda *a, **k: None
     fake.load = lambda *a, **k: calls.setdefault("load", k) or ("model", "tok")
     fake.main = lambda: calls.setdefault("main", fake.load(str(tmp_path), adapter_path=None) and sys.argv[:])
     monkeypatch.setitem(sys.modules, "mlx_lm.server", fake)
@@ -53,6 +55,8 @@ def test_serve_injects_loops_into_server_load(tmp_path, monkeypatch):
     assert calls["load"]["model_config"] == {"n_recurrent_loops": 4}
     assert calls["main"][:3] == ["mlx_lm.server", "--model", str(tmp_path)]
     assert "9001" in calls["main"]
+    assert calls["main"][calls["main"].index("--max-tokens") + 1] == "262144"  # the whole context, lowered per request
+    assert fake.BatchGenerator.__name__ == "BudgetedBatchGenerator"
 
 
 def test_memory_command(tmp_path, capsys):

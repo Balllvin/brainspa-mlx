@@ -82,8 +82,11 @@ curl http://127.0.0.1:8080/v1/chat/completions -H 'Content-Type: application/jso
 ```
 
 The server holds one model. Clients can leave out the `model` field; apps that need a model name (for example
-[Opencode](https://opencode.ai)) use `default_model`. The server answers up to 32,768 new tokens per reply and keeps
-at most 4 GB of prompt cache; `--max-tokens` and `--prompt-cache-bytes` change that. Other `mlx_lm.server` options pass through,
+[Opencode](https://opencode.ai)) use `default_model`. Each reply may use all the context its prompt leaves (the
+model's 262,144 tokens minus the prompt, or `--context-length`); a client's own `max_tokens` can lower that. In an
+app, raise its output limit for this model to the context length too, or the app cuts long reasoning short (for
+[Opencode](https://opencode.ai), `limit.output` on the model in `opencode.json`). The server keeps at most 4 GB of prompt cache
+(`--prompt-cache-bytes`). Other `mlx_lm.server` options pass through,
 for example `--host 0.0.0.0`.
 
 `--fast` ([Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) only) turns on our [Metal](https://developer.apple.com/metal/) kernels for [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4)'s normalisation steps and a two-stage output layer (a 4-bit copy of the
@@ -118,7 +121,7 @@ Set up Dory 1.0 4B abliterated on this computer. Do every step yourself.
 6. Ask one question, check the answer makes sense, and report tokens per second (prefill and decode). If anything fails, fix it and try again.
    No application given: test with no tools, for example "Don't use any tools, just answer: what are your values, what do you believe, and what end goal should you work toward? Think it through." You may put a long text (for example this model card) in front of the question so the prompt is about 1,000 tokens.
    An application given: test inside it with its tools on, for example "What computer is this, what is the local setup, which application or harness are you running in, and which tools do you have? Check, then answer."
-7. Start the OpenAI-compatible server and connect it to the application on the first line (with no application, show one curl call).
+7. Start the OpenAI-compatible server and connect it to the application on the first line, with that application's output limit for this model raised to the model's context length (with no application, show one curl call).
 8. Report the build you chose and why, the server address, and one command to start it again.
 ```
 

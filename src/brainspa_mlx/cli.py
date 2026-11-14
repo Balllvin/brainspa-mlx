@@ -31,6 +31,9 @@ def parser() -> argparse.ArgumentParser:
     g.add_argument("prompt")
     s = sub.add_parser("serve", help="OpenAI-compatible server (mlx_lm.server)")
     _common(s)
+    s.add_argument("--context-length", type=int, default=None,
+                   help="tokens per request, prompt plus reply (default: the model's max_position_embeddings); "
+                        "each reply may use all the room its prompt leaves")
     m = sub.add_parser("memory", help="KV cache per token and the longest context that fits a memory budget")
     m.add_argument("--model", required=True)
     m.add_argument("--loops", type=int, choices=runtime.ALLOWED_LOOPS, default=None)
@@ -60,14 +63,16 @@ def cmd_generate(a) -> int:
 SERVER_DEFAULTS = {
     "--temp": str(runtime.TEMPERATURE),
     "--top-p": str(runtime.TOP_P),
-    "--max-tokens": "32768",  # mlx_lm.server's 512 ends most replies inside the reasoning
     "--prompt-cache-bytes": str(4 * 2**30),  # an agent app's long prompts otherwise grow the cache past 9 GB
 }
 
 
-def server_argv(rest: list[str]) -> list[str]:
-    """mlx_lm.server options with our defaults for any option the caller did not set."""
+def server_argv(rest: list[str], context: int) -> list[str]:
+    """mlx_lm.server options with our defaults for any option the caller did not set. The default max new tokens is the
+    whole context; tokenbudget lowers it per request to the context minus that request's prompt."""
     argv = list(rest)
+    if "--max-tokens" not in argv:
+        argv += ["--max-tokens", str(context)]
     for flag, value in SERVER_DEFAULTS.items():
         if flag not in argv:
             argv += [flag, value]
@@ -82,6 +87,10 @@ def cmd_serve(a, rest: list[str]) -> int:
     override = runtime.model_config_override(config, a.loops)
     if a.fast:
         runtime.enable_fast_path(config)
+    context = a.context_length or config.get("max_position_embeddings", 262144)
+    from . import tokenbudget
+
+    tokenbudget.install(server, context)
     stock_load = server.load
 
     def load_with_loops(*args, **kwargs):
@@ -95,7 +104,7 @@ def cmd_serve(a, rest: list[str]) -> int:
         return loaded
 
     server.load = load_with_loops
-    sys.argv = ["mlx_lm.server", "--model", str(model_dir), *server_argv(rest)]
+    sys.argv = ["mlx_lm.server", "--model", str(model_dir), *server_argv(rest, context)]
     server.main()
     return 0
 
