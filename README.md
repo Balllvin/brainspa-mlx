@@ -68,7 +68,8 @@ curl http://127.0.0.1:8080/v1/chat/completions -H 'Content-Type: application/jso
   -d '{"messages":[{"role":"user","content":"What is 17 times 23?"}],"max_tokens":4000}'
 ```
 
-Other `mlx_lm.server` options pass through, for example `--host 0.0.0.0`.
+The server holds one model, so clients can leave out the `model` field. Other `mlx_lm.server` options pass through,
+for example `--host 0.0.0.0`.
 
 `--fast` (Dory only) turns on our Metal kernels for Dory's normalisation steps and a two-stage output layer (a 4-bit copy of the
 output layer picks the top 1,024 tokens and the original bf16 weights score them). Against the plain path it agreed on
