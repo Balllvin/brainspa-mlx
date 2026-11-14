@@ -69,7 +69,9 @@ curl http://127.0.0.1:8080/v1/chat/completions -H 'Content-Type: application/jso
   -d '{"messages":[{"role":"user","content":"What is 17 times 23?"}],"max_tokens":4000}'
 ```
 
-The server holds one model, so clients can leave out the `model` field. Other `mlx_lm.server` options pass through,
+The server holds one model. Clients can leave out the `model` field; apps that need a model name (for example
+[Opencode](https://opencode.ai)) use `default_model`. The server answers up to 32,768 new tokens per reply and keeps
+at most 4 GB of prompt cache; `--max-tokens` and `--prompt-cache-bytes` change that. Other `mlx_lm.server` options pass through,
 for example `--host 0.0.0.0`.
 
 `--fast` ([Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) only) turns on our [Metal](https://developer.apple.com/metal/) kernels for [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4)'s normalisation steps and a two-stage output layer (a 4-bit copy of the
