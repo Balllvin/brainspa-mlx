@@ -39,12 +39,16 @@ def parser() -> argparse.ArgumentParser:
 
 def cmd_generate(a) -> int:
     model, tokenizer, _ = runtime.load(a.model, a.loops, a.fast)
-    stream = None if a.quiet else (lambda t: print(t, end="", flush=True))
+    stream = None if a.quiet else (lambda t: print(t.replace("</think>", "\n\nAnswer:\n"), end="", flush=True))
+    if stream:
+        print("Reasoning:")
     r = runtime.generate(model, tokenizer, a.prompt, a.max_tokens, on_text=stream)
-    print()
-    print(f"\n--- reasoning: {len(r.reasoning)} chars | answer: {r.answer[:200]!r}")
-    print(f"--- {r.generated_tokens} tokens, {r.tokens_per_second:.1f} tokens/s, prompt {r.prompt_tokens} tokens, "
+    if a.quiet:
+        print(f"Reasoning: {len(r.reasoning)} characters\n\nAnswer:\n{r.answer}")
+    print(f"\n\n{r.generated_tokens} tokens, {r.tokens_per_second:.1f} tokens/s, prompt {r.prompt_tokens} tokens, "
           f"peak memory {r.peak_memory_gb:.2f} GB")
+    if not r.answer:
+        print("No answer: the reply ended inside the reasoning. Raise --max-tokens.", file=sys.stderr)
     return 0 if r.answer else 1
 
 
