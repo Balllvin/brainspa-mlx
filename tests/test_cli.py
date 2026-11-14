@@ -74,3 +74,20 @@ def test_real_model_answers():
     assert "391" in r.answer
     assert r.reasoning
     assert r.tokens_per_second > 0
+
+
+def test_context_file_goes_before_the_prompt(tmp_path, monkeypatch, capsys):
+    ctx = tmp_path / "card.md"
+    ctx.write_text("LONG TEXT")
+    seen = {}
+
+    def fake_generate(model, tok, prompt, max_tokens, on_text=None):
+        seen["prompt"] = prompt
+        return runtime.Result("r", "a", 1000, 900.0, 120, 30.0, 1.0, 3.3)
+
+    monkeypatch.setattr(runtime, "load", lambda *a, **k: (None, None, None))
+    monkeypatch.setattr(runtime, "generate", fake_generate)
+    assert cli.main(["generate", "--model", "x", "--quiet", "--context-file", str(ctx), "Q?"]) == 0
+    assert seen["prompt"] == "LONG TEXT\n\nQ?"
+    out = capsys.readouterr().out
+    assert "prefill: 1000 tokens at 900.0 tokens/s" in out and "decode: 120 tokens at 30.0 tokens/s" in out

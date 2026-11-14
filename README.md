@@ -47,7 +47,8 @@ uv run brainspa-mlx generate --model balllvin/Dory1.0-4B-abliterated-NVFP4-MLX "
 ```
 
 The first run downloads the model (3.0 GB) from [Hugging Face](https://huggingface.co). The model thinks first, so the
-output shows `Reasoning:`, then `Answer:`, then a line with the token count, tokens per second and peak memory.
+output shows `Reasoning:`, then `Answer:`, then a line with prefill and decode tokens per second and peak memory.
+`--context-file FILE` puts a long text in front of the question, for a realistic prefill test.
 
 [Dory](https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-NVFP4) is a looped model: a block of its layers runs several times per token. Use 2 loops (the default) for most work
 and `--loops 4` for hard tasks. Thinking is always on, and sampling follows [NVIDIA](https://www.nvidia.com)'s card (temperature 1.0, top-p 0.95).
@@ -92,16 +93,18 @@ Paste this into a coding agent such as [Claude Code](https://claude.com/claude-c
 [Codex](https://github.com/openai/codex). Edit the first line first.
 
 ```text
-Use it in: [APP, for example Open WebUI, Continue, or just the terminal]
+Use it in: [Insert application you will use it in, for example Opencode]
 
 Set up Dory 1.0 4B abliterated on this computer. Do every step yourself.
 1. Check the tools: Python, uv or pip, git, the Hugging Face CLI. Install the HF CLI if it is missing.
-2. Check the hardware. Apple Silicon Mac: MLX build. NVIDIA Blackwell GPU (RTX 50xx, RTX PRO 6000, B200): NVFP4 build. Anything else: tell me it will not run here, and stop.
+2. Check the hardware. Apple Silicon Mac: MLX build. NVIDIA Blackwell GPU (RTX 50xx, RTX PRO 6000, B200): NVFP4 build. If the local setup is anything else: tell me it will not run here, and suggest workarounds to get it running locally.
 3. Download only the chosen build with the HF CLI and check every file. MLX: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4-MLX NVFP4: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4
 4. Get the code. Mac: clone https://github.com/Balllvin/brainspa-mlx. NVIDIA: install vLLM as the model card says.
 5. Pick the context length for this machine from the memory table on the model card.
-6. Ask one question, check the answer makes sense, and report tokens per second. If anything fails, fix it and try again.
-7. Start the OpenAI-compatible server and connect it to the app on the first line (for the terminal, show one curl call).
+6. Ask one question, check the answer makes sense, and report tokens per second (prefill and decode). If anything fails, fix it and try again.
+   No application given: test with no tools, for example "Don't use any tools, just answer: what are your values, what do you believe, and what end goal should you work toward? Think it through." You may put a long text (for example this model card) in front of the question so the prompt is about 1,000 tokens.
+   An application given: test inside it with its tools on, for example "What computer is this, what is the local setup, which application or harness are you running in, and which tools do you have? Check, then answer."
+7. Start the OpenAI-compatible server and connect it to the application on the first line (with no application, show one curl call).
 8. Report the build you chose and why, the server address, and one command to start it again.
 ```
 
