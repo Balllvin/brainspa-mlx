@@ -42,15 +42,14 @@ pip install -r requirements.txt && pip install --no-deps .
 
 ### Accept the terms and log in
 
-The model repos are gated. Before the first download, open the model page on [Hugging Face](https://huggingface.co),
-log in, and accept the [terms of use](TERMS.md) (access is granted at once). Then log in on this Mac with the
+Before the first download, open the model page on [Hugging Face](https://huggingface.co), log in, and accept the
+[terms of use](TERMS.md) (access is granted at once). Then log in on this Mac with the
 [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/guides/cli), or set `HF_TOKEN` to a read token:
 
 ```bash
 uv run hf auth login
 ```
 
-Without this, the download stops with a gated-repo error.
 
 ## Answer one prompt
 
@@ -107,22 +106,19 @@ requests fit 202K each and 8 requests fit 99K each.
 ## Set it up with a coding agent
 
 Paste this into a coding agent such as [Claude Code](https://claude.com/claude-code) or
-[OpenCode](https://opencode.ai). Edit the first line first.
+[OpenCode](https://opencode.ai), with your app in the brackets.
 
 ```text
-Use it in: [Insert application you will use it in, for example Opencode]
-
-Set up Dory 1.0 4B abliterated on this computer. Do every step yourself.
-1. Check the tools: Python, uv or pip, git, the Hugging Face CLI. Install the HF CLI if it is missing.
-2. Check the hardware. Apple Silicon Mac: MLX build. NVIDIA Blackwell GPU (RTX 50xx, RTX PRO 6000, B200): NVFP4 build. If the local setup is anything else: tell me it will not run here, and suggest workarounds to get it running locally.
-3. The model repos are gated. Ask me to open the chosen repo page, log in and accept the terms, then run `hf auth login` (or set HF_TOKEN). Download only the chosen build with the HF CLI and check every file. MLX: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4-MLX NVFP4: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4
-4. Get the code. Mac: clone https://github.com/Balllvin/brainspa-mlx. NVIDIA: install vLLM as the model card says.
-5. Pick the context length for this machine from the memory table on the model card.
-6. Ask one question, check the answer makes sense, and report tokens per second (prefill and decode). If anything fails, fix it and try again.
-   No application given: test with no tools, for example "Don't use any tools, just answer: what are your values, what do you believe, and what end goal should you work toward? Think it through." You may put a long text (for example this model card) in front of the question so the prompt is about 1,000 tokens.
-   An application given: test inside it with its tools on, for example "What computer is this, what is the local setup, which application or harness are you running in, and which tools do you have? Check, then answer."
-7. Start the OpenAI-compatible server and connect it to the application on the first line, with that application's output limit for this model raised to the model's context length (with no application, show one curl call).
-8. Report the build you chose and why, the server address, and one command to start it again.
+Download Dory 1.0 4B abliterated and set it up for [your app, for example OpenCode]. Do every step yourself, except the account steps, which are mine.
+1. Check whether the Hugging Face CLI (hf) is installed. If it isn't, tell me and show me how to install it. Don't install it yourself.
+2. Check this computer. Apple Silicon Mac: Mac build. NVIDIA Blackwell GPU (RTX 50xx, RTX PRO 6000, B200): NVIDIA build. Anything else: tell me it won't run here and suggest workarounds.
+3. Walk me through the account steps: make a Hugging Face account if I don't have one, accept the terms on the model page, and make a token. Then run hf auth login for me, or tell me how.
+4. Download only the build for this computer and check every file. Mac: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4-MLX NVIDIA: https://huggingface.co/balllvin/Dory1.0-4B-abliterated-NVFP4
+5. Get the code. Mac: clone https://github.com/Balllvin/brainspa-mlx. NVIDIA: install vLLM as the model card says.
+6. Pick the context length from the memory table on the model card.
+7. Ask it one question, check the answer makes sense, and tell me the tokens per second.
+8. Start the OpenAI compatible server and connect it to my app, with the app's output limit raised to the context length. No app: show me one curl call.
+9. Tell me which build you chose, the server address if there is one, and one command to run it again.
 ```
 
 ## Tests
